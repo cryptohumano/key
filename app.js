@@ -21293,9 +21293,14 @@ function openPrivateKey(pem, password) {
   const text = String(pem ?? "");
   const encrypted = /ENCRYPTED/.test(text);
   if (encrypted) {
-    const key = import_node_forge.default.pki.decryptRsaPrivateKey(text, password ?? "");
-    if (!key) throw new Error("La contrase\xF1a no abre esta llave.");
-    return key;
+    try {
+      const key = import_node_forge.default.pki.decryptRsaPrivateKey(text, password ?? "");
+      if (!key) throw new Error("La contrase\xF1a no abre esta llave.");
+      return key;
+    } catch (error) {
+      if (error?.message === "La contrase\xF1a no abre esta llave.") throw error;
+      throw new Error("La contrase\xF1a no abre esta llave.");
+    }
   }
   try {
     return import_node_forge.default.pki.privateKeyFromPem(text);
@@ -21349,8 +21354,8 @@ function buildProof({ kind, did, cert, privateKey }) {
     serial: cert.serialNumber,
     subject: dn(cert.subject),
     issuer: dn(cert.issuer),
-    notBefore: cert.validity.notBefore.toISOString(),
-    notAfter: cert.validity.notAfter.toISOString(),
+    notBefore: stamp(cert.validity.notBefore),
+    notAfter: stamp(cert.validity.notAfter),
     rsaSignature: signStatement(privateKey, statement)
   };
 }
@@ -21359,6 +21364,9 @@ async function verifyProof(proof) {
   const cert = readCertificate(new TextEncoder().encode(String(proof.certificate ?? "")));
   const fingerprint = fingerprintOf(cert);
   if (fingerprint !== proof.fingerprint) notes.push("La huella no cuadra con el certificado.");
+  if (proof.subject !== dn(cert.subject) || proof.issuer !== dn(cert.issuer)) {
+    notes.push("El titular o el emisor no cuadran con el certificado.");
+  }
   const lines = String(proof.statement ?? "").split("\n");
   if (lines[0] !== MARK) notes.push("El texto firmado no es de esta versi\xF3n.");
   if (lines[1] !== proof.did) notes.push("El texto firmado nombra otra identidad.");
@@ -21371,11 +21379,14 @@ async function verifyProof(proof) {
     rsaOk = false;
   }
   if (!rsaOk) notes.push("La firma RSA no cuadra con el certificado.");
+  const notBefore = stamp(cert.validity.notBefore);
+  const notAfter = stamp(cert.validity.notAfter);
+  if (stamp(new Date(proof.notBefore)) !== notBefore || stamp(new Date(proof.notAfter)) !== notAfter) {
+    notes.push("La vigencia no cuadra con el certificado.");
+  }
   const now = Date.now();
-  const notBefore = Date.parse(proof.notBefore);
-  const notAfter = Date.parse(proof.notAfter);
-  if (Number.isFinite(notBefore) && now < notBefore) notes.push("El certificado todav\xEDa no entra en vigor.");
-  if (Number.isFinite(notAfter) && now > notAfter) notes.push("El certificado ya venci\xF3.");
+  if (now < cert.validity.notBefore.getTime()) notes.push("El certificado todav\xEDa no entra en vigor.");
+  if (now > cert.validity.notAfter.getTime()) notes.push("El certificado ya venci\xF3.");
   let auraOk = false;
   if (proof.auraSignature && proof.did) {
     try {
@@ -21397,8 +21408,8 @@ async function verifyProof(proof) {
     subject: dn(cert.subject),
     issuer: dn(cert.issuer),
     serial: cert.serialNumber,
-    notBefore: cert.validity.notBefore.toISOString(),
-    notAfter: cert.validity.notAfter.toISOString(),
+    notBefore,
+    notAfter,
     notes
   };
 }
@@ -21423,6 +21434,11 @@ function proofFromJwt(jwt) {
     rsaSignature: subject.rsaSignature,
     auraSignature: subject.auraSignature
   };
+}
+function stamp(date) {
+  const ms = date instanceof Date ? date.getTime() : Date.parse(date);
+  if (!Number.isFinite(ms)) return "";
+  return new Date(Math.floor(ms / 1e3) * 1e3).toISOString();
 }
 function dn(name) {
   return name.attributes.map((a) => `${a.shortName || a.name}=${a.value}`).join(", ");
