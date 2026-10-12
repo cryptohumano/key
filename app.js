@@ -21776,7 +21776,12 @@ $("drop").addEventListener("change", () => {
 });
 window.addEventListener("hashchange", route);
 route();
-if (aura()) $("wallet").textContent = "Conectar Aura";
+if (aura()) {
+  $("wallet").textContent = "Conectar Aura";
+  if (navigator.userAgent.includes("Aura/")) {
+    connect().catch((error) => say(error?.message || "No pude conectar Aura.", true));
+  }
+}
 /*! Bundled license information:
 
 @noble/hashes/esm/utils.js:
