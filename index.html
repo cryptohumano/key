@@ -23,23 +23,26 @@
     <p id="status" class="status" hidden></p>
     <section id="ligar">
       <h1>La llave se queda en este navegador.</h1>
-      <p class="lead">Elige la FIEL o la FIREL. La contraseña solo abre el archivo y no sale de aquí. Aura firma un texto que nombra tu identidad y la huella del certificado.</p>
+      <p class="lead">Elige la FIEL o la FIREL. El .key del SAT es un archivo binario. La contraseña solo lo abre y no sale de aquí. Si ya la guardaste en CiGo, se usa la de la bóveda.</p>
       <form class="card" onsubmit="return false">
-        <label>Tipo
-          <select id="kind">
-            <option value="FIEL">FIEL · SAT</option>
-            <option value="FIREL">FIREL · INE</option>
-          </select>
-        </label>
-        <label>Certificado .cer
-          <input id="cer" type="file" accept=".cer,.crt,.pem" />
-        </label>
-        <label>Llave .key
-          <input id="key" type="file" accept=".key,.pem" />
-        </label>
-        <label>Contraseña
-          <input id="password" type="password" autocomplete="off" />
-        </label>
+        <p id="vault" hidden></p>
+        <div id="files">
+          <label>Tipo
+            <select id="kind">
+              <option value="FIEL">FIEL · SAT</option>
+              <option value="FIREL">FIREL · INE</option>
+            </select>
+          </label>
+          <label>Certificado .cer
+            <input id="cer" type="file" accept=".cer,.crt,.pem" />
+          </label>
+          <label>Llave .key
+            <input id="key" type="file" accept=".key,.pem,application/octet-stream" />
+          </label>
+          <label>Contraseña de la llave
+            <input id="password" type="password" autocomplete="off" />
+          </label>
+        </div>
         <div class="row">
           <button id="prove" type="button">Firmar prueba</button>
           <button id="save" type="button" hidden>Guardar en la cartera</button>
@@ -61,6 +64,6 @@
   <footer>
     <p>Esto demuestra posesión de la llave. No sustituye una identificación ni una constancia del SAT o del INE.</p>
   </footer>
-  <script type="module" src="/app.js?v=1"></script>
+  <script type="module" src="/app.js?v=2"></script>
 </body>
 </html>
