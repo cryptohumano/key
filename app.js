@@ -72,23 +72,23 @@ var require_baseN = __commonJS({
         var i = 0;
         var base = alphabet.length;
         var first = alphabet.charAt(0);
-        var digits = [0];
+        var digits2 = [0];
         for (i = 0; i < input.length; ++i) {
-          for (var j = 0, carry = input[i]; j < digits.length; ++j) {
-            carry += digits[j] << 8;
-            digits[j] = carry % base;
+          for (var j = 0, carry = input[i]; j < digits2.length; ++j) {
+            carry += digits2[j] << 8;
+            digits2[j] = carry % base;
             carry = carry / base | 0;
           }
           while (carry > 0) {
-            digits.push(carry % base);
+            digits2.push(carry % base);
             carry = carry / base | 0;
           }
         }
         for (i = 0; input[i] === 0 && i < input.length - 1; ++i) {
           output += first;
         }
-        for (i = digits.length - 1; i >= 0; --i) {
-          output += alphabet[digits[i]];
+        for (i = digits2.length - 1; i >= 0; --i) {
+          output += alphabet[digits2[i]];
         }
       }
       if (maxline) {
@@ -142,15 +142,15 @@ var require_baseN = __commonJS({
       var i = 0;
       var base = alphabet.length;
       var first = alphabet.charAt(0);
-      var digits = [0];
+      var digits2 = [0];
       for (i = 0; i < input.length(); ++i) {
-        for (var j = 0, carry = input.at(i); j < digits.length; ++j) {
-          carry += digits[j] << 8;
-          digits[j] = carry % base;
+        for (var j = 0, carry = input.at(i); j < digits2.length; ++j) {
+          carry += digits2[j] << 8;
+          digits2[j] = carry % base;
           carry = carry / base | 0;
         }
         while (carry > 0) {
-          digits.push(carry % base);
+          digits2.push(carry % base);
           carry = carry / base | 0;
         }
       }
@@ -158,8 +158,8 @@ var require_baseN = __commonJS({
       for (i = 0; input.at(i) === 0 && i < input.length() - 1; ++i) {
         output += first;
       }
-      for (i = digits.length - 1; i >= 0; --i) {
-        output += alphabet[digits[i]];
+      for (i = digits2.length - 1; i >= 0; --i) {
+        output += alphabet[digits2[i]];
       }
       return output;
     }
@@ -7002,12 +7002,12 @@ var require_pkcs1 = __commonJS({
       }
       return db.substring(index + 1);
     };
-    function rsa_mgf1(seed, maskLength, hash) {
-      if (!hash) {
-        hash = forge3.md.sha1.create();
+    function rsa_mgf1(seed, maskLength, hash2) {
+      if (!hash2) {
+        hash2 = forge3.md.sha1.create();
       }
       var t = "";
-      var count = Math.ceil(maskLength / hash.digestLength);
+      var count = Math.ceil(maskLength / hash2.digestLength);
       for (var i = 0; i < count; ++i) {
         var c = String.fromCharCode(
           i >> 24 & 255,
@@ -7015,9 +7015,9 @@ var require_pkcs1 = __commonJS({
           i >> 8 & 255,
           i & 255
         );
-        hash.start();
-        hash.update(seed + c);
-        t += hash.digest().getBytes();
+        hash2.start();
+        hash2.update(seed + c);
+        t += hash2.digest().getBytes();
       }
       return t.substring(0, maskLength);
     }
@@ -9061,13 +9061,13 @@ var require_pbe = __commonJS({
       if (salt === null) {
         salt = "";
       }
-      var digests = [hash(md, password + salt)];
+      var digests = [hash2(md, password + salt)];
       for (var length = 16, i = 1; length < dkLen; ++i, length += 16) {
-        digests.push(hash(md, digests[i - 1] + password + salt));
+        digests.push(hash2(md, digests[i - 1] + password + salt));
       }
       return digests.join("").substr(0, dkLen);
     };
-    function hash(md, bytes) {
+    function hash2(md, bytes) {
       return md.start().update(bytes).digest().getBytes();
     }
     function prfOidToMessageDigest(prfOid) {
@@ -9525,9 +9525,9 @@ var require_pss = __commonJS({
           saltLength: arguments[2]
         };
       }
-      var hash = options.md;
+      var hash2 = options.md;
       var mgf = options.mgf;
-      var hLen = hash.digestLength;
+      var hLen = hash2.digestLength;
       var salt_ = options.salt || null;
       if (typeof salt_ === "string") {
         salt_ = forge3.util.createBuffer(salt_);
@@ -9563,9 +9563,9 @@ var require_pss = __commonJS({
         m_.fillWithByte(0, 8);
         m_.putBytes(mHash);
         m_.putBytes(salt);
-        hash.start();
-        hash.update(m_.getBytes());
-        var h = hash.digest().getBytes();
+        hash2.start();
+        hash2.update(m_.getBytes());
+        var h = hash2.digest().getBytes();
         var ps = new forge3.util.ByteBuffer();
         ps.fillWithByte(0, emLen - sLen - hLen - 2);
         ps.putByte(1);
@@ -9619,9 +9619,9 @@ var require_pss = __commonJS({
         m_.fillWithByte(0, 8);
         m_.putBytes(mHash);
         m_.putBytes(salt);
-        hash.start();
-        hash.update(m_.getBytes());
-        var h_ = hash.digest().getBytes();
+        hash2.start();
+        hash2.update(m_.getBytes());
+        var h_ = hash2.digest().getBytes();
         return h === h_;
       };
       return pssobj;
@@ -10161,12 +10161,12 @@ var require_x509 = __commonJS({
         case oids.sha1WithRSASignature:
           break;
         case oids["RSASSA-PSS"]:
-          var hash, mgf;
-          hash = oids[cert.signatureParameters.mgf.hash.algorithmOid];
-          if (hash === void 0 || forge3.md[hash] === void 0) {
+          var hash2, mgf;
+          hash2 = oids[cert.signatureParameters.mgf.hash.algorithmOid];
+          if (hash2 === void 0 || forge3.md[hash2] === void 0) {
             var error = new Error("Unsupported MGF hash function.");
             error.oid = cert.signatureParameters.mgf.hash.algorithmOid;
-            error.name = hash;
+            error.name = hash2;
             throw error;
           }
           mgf = oids[cert.signatureParameters.mgf.algorithmOid];
@@ -10176,16 +10176,16 @@ var require_x509 = __commonJS({
             error.name = mgf;
             throw error;
           }
-          mgf = forge3.mgf[mgf].create(forge3.md[hash].create());
-          hash = oids[cert.signatureParameters.hash.algorithmOid];
-          if (hash === void 0 || forge3.md[hash] === void 0) {
+          mgf = forge3.mgf[mgf].create(forge3.md[hash2].create());
+          hash2 = oids[cert.signatureParameters.hash.algorithmOid];
+          if (hash2 === void 0 || forge3.md[hash2] === void 0) {
             var error = new Error("Unsupported RSASSA-PSS hash function.");
             error.oid = cert.signatureParameters.hash.algorithmOid;
-            error.name = hash;
+            error.name = hash2;
             throw error;
           }
           scheme = forge3.pss.create(
-            forge3.md[hash].create(),
+            forge3.md[hash2].create(),
             mgf,
             cert.signatureParameters.saltLength
           );
@@ -11537,9 +11537,9 @@ var require_x509 = __commonJS({
       };
       caStore.listAllCertificates = function() {
         var certList = [];
-        for (var hash in caStore.certs) {
-          if (caStore.certs.hasOwnProperty(hash)) {
-            var value = caStore.certs[hash];
+        for (var hash2 in caStore.certs) {
+          if (caStore.certs.hasOwnProperty(hash2)) {
+            var value = caStore.certs[hash2];
             if (!forge3.util.isArray(value)) {
               certList.push(value);
             } else {
@@ -15689,13 +15689,13 @@ var require_ed25519 = __commonJS({
       var md = forge3.md.sha512.create();
       var buffer = new ByteBuffer(msg);
       md.update(buffer.getBytes(msgLen), "binary");
-      var hash = md.digest().getBytes();
+      var hash2 = md.digest().getBytes();
       if (typeof Buffer !== "undefined") {
-        return Buffer.from(hash, "binary");
+        return Buffer.from(hash2, "binary");
       }
       var out = new NativeBuffer(ed25519.constants.HASH_BYTE_LENGTH);
       for (var i = 0; i < 64; ++i) {
-        out[i] = hash.charCodeAt(i);
+        out[i] = hash2.charCodeAt(i);
       }
       return out;
     }
@@ -16518,8 +16518,8 @@ var require_kem = __commonJS({
           c.putInt32(i);
           md.start();
           md.update(x + c.getBytes());
-          var hash = md.digest();
-          key.putBytes(hash.getBytes(digestLength));
+          var hash2 = md.digest();
+          key.putBytes(hash2.getBytes(digestLength));
         }
         key.truncate(key.length() - length);
         return key.getBytes();
@@ -17871,6 +17871,117 @@ var require_lib = __commonJS({
   }
 });
 
+// node_modules/abitype/dist/esm/regex.js
+function execTyped(regex, string) {
+  const match = regex.exec(string);
+  return match?.groups;
+}
+var init_regex = __esm({
+  "node_modules/abitype/dist/esm/regex.js"() {
+  }
+});
+
+// node_modules/abitype/dist/esm/human-readable/formatAbiParameter.js
+function formatAbiParameter(abiParameter) {
+  let type = abiParameter.type;
+  if (tupleRegex.test(abiParameter.type) && "components" in abiParameter) {
+    type = "(";
+    const length = abiParameter.components.length;
+    for (let i = 0; i < length; i++) {
+      const component = abiParameter.components[i];
+      type += formatAbiParameter(component);
+      if (i < length - 1)
+        type += ", ";
+    }
+    const result = execTyped(tupleRegex, abiParameter.type);
+    type += `)${result?.array || ""}`;
+    return formatAbiParameter({
+      ...abiParameter,
+      type
+    });
+  }
+  if ("indexed" in abiParameter && abiParameter.indexed)
+    type = `${type} indexed`;
+  if (abiParameter.name)
+    return `${type} ${abiParameter.name}`;
+  return type;
+}
+var tupleRegex;
+var init_formatAbiParameter = __esm({
+  "node_modules/abitype/dist/esm/human-readable/formatAbiParameter.js"() {
+    init_regex();
+    tupleRegex = /^tuple(?<array>(\[(\d*)\])*)$/;
+  }
+});
+
+// node_modules/abitype/dist/esm/human-readable/formatAbiParameters.js
+function formatAbiParameters(abiParameters) {
+  let params = "";
+  const length = abiParameters.length;
+  for (let i = 0; i < length; i++) {
+    const abiParameter = abiParameters[i];
+    params += formatAbiParameter(abiParameter);
+    if (i !== length - 1)
+      params += ", ";
+  }
+  return params;
+}
+var init_formatAbiParameters = __esm({
+  "node_modules/abitype/dist/esm/human-readable/formatAbiParameters.js"() {
+    init_formatAbiParameter();
+  }
+});
+
+// node_modules/abitype/dist/esm/human-readable/formatAbiItem.js
+function formatAbiItem(abiItem) {
+  if (abiItem.type === "function")
+    return `function ${abiItem.name}(${formatAbiParameters(abiItem.inputs)})${abiItem.stateMutability && abiItem.stateMutability !== "nonpayable" ? ` ${abiItem.stateMutability}` : ""}${abiItem.outputs?.length ? ` returns (${formatAbiParameters(abiItem.outputs)})` : ""}`;
+  if (abiItem.type === "event")
+    return `event ${abiItem.name}(${formatAbiParameters(abiItem.inputs)})`;
+  if (abiItem.type === "error")
+    return `error ${abiItem.name}(${formatAbiParameters(abiItem.inputs)})`;
+  if (abiItem.type === "constructor")
+    return `constructor(${formatAbiParameters(abiItem.inputs)})${abiItem.stateMutability === "payable" ? " payable" : ""}`;
+  if (abiItem.type === "fallback")
+    return `fallback() external${abiItem.stateMutability === "payable" ? " payable" : ""}`;
+  return "receive() external payable";
+}
+var init_formatAbiItem = __esm({
+  "node_modules/abitype/dist/esm/human-readable/formatAbiItem.js"() {
+    init_formatAbiParameters();
+  }
+});
+
+// node_modules/abitype/dist/esm/exports/index.js
+var init_exports = __esm({
+  "node_modules/abitype/dist/esm/exports/index.js"() {
+    init_formatAbiItem();
+  }
+});
+
+// node_modules/viem/_esm/utils/abi/formatAbiItem.js
+function formatAbiItem2(abiItem, { includeName = false } = {}) {
+  if (abiItem.type !== "function" && abiItem.type !== "event" && abiItem.type !== "error")
+    throw new InvalidDefinitionTypeError(abiItem.type);
+  return `${abiItem.name}(${formatAbiParams(abiItem.inputs, { includeName })})`;
+}
+function formatAbiParams(params, { includeName = false } = {}) {
+  if (!params)
+    return "";
+  return params.map((param) => formatAbiParam(param, { includeName })).join(includeName ? ", " : ",");
+}
+function formatAbiParam(param, { includeName }) {
+  if (param.type.startsWith("tuple")) {
+    return `(${formatAbiParams(param.components, { includeName })})${param.type.slice("tuple".length)}`;
+  }
+  return param.type + (includeName && param.name ? ` ${param.name}` : "");
+}
+var init_formatAbiItem2 = __esm({
+  "node_modules/viem/_esm/utils/abi/formatAbiItem.js"() {
+    init_abi();
+  }
+});
+
 // node_modules/viem/_esm/utils/data/isHex.js
 function isHex(value, { strict = true } = {}) {
   if (!value)
@@ -17917,7 +18028,7 @@ var init_base = __esm({
   "node_modules/viem/_esm/errors/base.js"() {
     init_version();
     errorConfig = {
-      getDocsUrl: ({ docsBaseUrl, docsPath = "", docsSlug }) => docsPath ? `${docsBaseUrl ?? "https://viem.sh"}${docsPath}${docsSlug ? `#${docsSlug}` : ""}` : void 0,
+      getDocsUrl: ({ docsBaseUrl, docsPath: docsPath2 = "", docsSlug }) => docsPath2 ? `${docsBaseUrl ?? "https://viem.sh"}${docsPath2}${docsSlug ? `#${docsSlug}` : ""}` : void 0,
       version: `viem@${version}`
     };
     BaseError = class _BaseError extends Error {
@@ -17929,12 +18040,12 @@ var init_base = __esm({
             return args.cause.message;
           return args.details;
         })();
-        const docsPath = (() => {
+        const docsPath2 = (() => {
           if (args.cause instanceof _BaseError)
             return args.cause.docsPath || args.docsPath;
           return args.docsPath;
         })();
-        const docsUrl = errorConfig.getDocsUrl?.({ ...args, docsPath });
+        const docsUrl = errorConfig.getDocsUrl?.({ ...args, docsPath: docsPath2 });
         const message = [
           shortMessage || "An error occurred.",
           "",
@@ -17981,7 +18092,7 @@ var init_base = __esm({
           value: "BaseError"
         });
         this.details = details;
-        this.docsPath = docsPath;
+        this.docsPath = docsPath2;
         this.metaMessages = args.metaMessages;
         this.name = args.name ?? this.name;
         this.shortMessage = shortMessage;
@@ -17994,11 +18105,97 @@ var init_base = __esm({
   }
 });
 
+// node_modules/viem/_esm/errors/abi.js
+var AbiEncodingArrayLengthMismatchError, AbiEncodingBytesSizeMismatchError, AbiEncodingLengthMismatchError, AbiFunctionNotFoundError, AbiItemAmbiguityError, InvalidAbiEncodingTypeError, InvalidArrayError, InvalidDefinitionTypeError;
+var init_abi = __esm({
+  "node_modules/viem/_esm/errors/abi.js"() {
+    init_formatAbiItem2();
+    init_size();
+    init_base();
+    AbiEncodingArrayLengthMismatchError = class extends BaseError {
+      constructor({ expectedLength, givenLength, type }) {
+        super([
+          `ABI encoding array length mismatch for type ${type}.`,
+          `Expected length: ${expectedLength}`,
+          `Given length: ${givenLength}`
+        ].join("\n"), { name: "AbiEncodingArrayLengthMismatchError" });
+      }
+    };
+    AbiEncodingBytesSizeMismatchError = class extends BaseError {
+      constructor({ expectedSize, value }) {
+        super(`Size of bytes "${value}" (bytes${size(value)}) does not match expected size (bytes${expectedSize}).`, { name: "AbiEncodingBytesSizeMismatchError" });
+      }
+    };
+    AbiEncodingLengthMismatchError = class extends BaseError {
+      constructor({ expectedLength, givenLength }) {
+        super([
+          "ABI encoding params/values length mismatch.",
+          `Expected length (params): ${expectedLength}`,
+          `Given length (values): ${givenLength}`
+        ].join("\n"), { name: "AbiEncodingLengthMismatchError" });
+      }
+    };
+    AbiFunctionNotFoundError = class extends BaseError {
+      constructor(functionName, { docsPath: docsPath2 } = {}) {
+        super([
+          `Function ${functionName ? `"${functionName}" ` : ""}not found on ABI.`,
+          "Make sure you are using the correct ABI and that the function exists on it."
+        ].join("\n"), {
+          docsPath: docsPath2,
+          name: "AbiFunctionNotFoundError"
+        });
+      }
+    };
+    AbiItemAmbiguityError = class extends BaseError {
+      constructor(x, y) {
+        super("Found ambiguous types in overloaded ABI items.", {
+          metaMessages: [
+            `\`${x.type}\` in \`${formatAbiItem2(x.abiItem)}\`, and`,
+            `\`${y.type}\` in \`${formatAbiItem2(y.abiItem)}\``,
+            "",
+            "These types encode differently and cannot be distinguished at runtime.",
+            "Remove one of the ambiguous items in the ABI."
+          ],
+          name: "AbiItemAmbiguityError"
+        });
+      }
+    };
+    InvalidAbiEncodingTypeError = class extends BaseError {
+      constructor(type, { docsPath: docsPath2 }) {
+        super([
+          `Type "${type}" is not a valid encoding type.`,
+          "Please provide a valid ABI type."
+        ].join("\n"), { docsPath: docsPath2, name: "InvalidAbiEncodingType" });
+      }
+    };
+    InvalidArrayError = class extends BaseError {
+      constructor(value) {
+        super([`Value "${value}" is not a valid array.`].join("\n"), {
+          name: "InvalidArrayError"
+        });
+      }
+    };
+    InvalidDefinitionTypeError = class extends BaseError {
+      constructor(type) {
+        super([
+          `"${type}" is not a valid definition type.`,
+          'Valid types: "function", "event", "error"'
+        ].join("\n"), { name: "InvalidDefinitionTypeError" });
+      }
+    };
+  }
+});
+
 // node_modules/viem/_esm/errors/data.js
-var SizeExceedsPaddingSizeError;
+var SliceOffsetOutOfBoundsError, SizeExceedsPaddingSizeError;
 var init_data = __esm({
   "node_modules/viem/_esm/errors/data.js"() {
     init_base();
+    SliceOffsetOutOfBoundsError = class extends BaseError {
+      constructor({ offset, position, size: size2 }) {
+        super(`Slice ${position === "start" ? "starting" : "ending"} at offset "${offset}" is out-of-bounds (size: ${size2}).`, { name: "SliceOffsetOutOfBoundsError" });
+      }
+    };
     SizeExceedsPaddingSizeError = class extends BaseError {
       constructor({ size: size2, targetSize, type }) {
         super(`${type.charAt(0).toUpperCase()}${type.slice(1).toLowerCase()} size (${size2}) exceeds padding size (${targetSize}).`, { name: "SizeExceedsPaddingSizeError" });
@@ -18612,6 +18809,124 @@ var init_keccak256 = __esm({
   }
 });
 
+// node_modules/viem/_esm/utils/hash/hashSignature.js
+function hashSignature(sig) {
+  return hash(sig);
+}
+var hash;
+var init_hashSignature = __esm({
+  "node_modules/viem/_esm/utils/hash/hashSignature.js"() {
+    init_toBytes();
+    init_keccak256();
+    hash = (value) => keccak256(toBytes(value));
+  }
+});
+
+// node_modules/viem/_esm/utils/hash/normalizeSignature.js
+function normalizeSignature(signature) {
+  let active = true;
+  let current = "";
+  let level = 0;
+  let result = "";
+  let valid = false;
+  for (let i = 0; i < signature.length; i++) {
+    const char = signature[i];
+    if (["(", ")", ","].includes(char))
+      active = true;
+    if (char === "(")
+      level++;
+    if (char === ")")
+      level--;
+    if (!active)
+      continue;
+    if (level === 0) {
+      if (char === " " && ["event", "function", ""].includes(result))
+        result = "";
+      else {
+        result += char;
+        if (char === ")") {
+          valid = true;
+          break;
+        }
+      }
+      continue;
+    }
+    if (char === " ") {
+      if (signature[i - 1] !== "," && current !== "," && current !== ",(") {
+        current = "";
+        active = false;
+      }
+      continue;
+    }
+    result += char;
+    current += char;
+  }
+  if (!valid)
+    throw new BaseError("Unable to normalize signature.");
+  return result;
+}
+var init_normalizeSignature = __esm({
+  "node_modules/viem/_esm/utils/hash/normalizeSignature.js"() {
+    init_base();
+  }
+});
+
+// node_modules/viem/_esm/utils/hash/toSignature.js
+var toSignature;
+var init_toSignature = __esm({
+  "node_modules/viem/_esm/utils/hash/toSignature.js"() {
+    init_exports();
+    init_normalizeSignature();
+    toSignature = (def) => {
+      const def_ = (() => {
+        if (typeof def === "string")
+          return def;
+        return formatAbiItem(def);
+      })();
+      return normalizeSignature(def_);
+    };
+  }
+});
+
+// node_modules/viem/_esm/utils/hash/toSignatureHash.js
+function toSignatureHash(fn) {
+  return hashSignature(toSignature(fn));
+}
+var init_toSignatureHash = __esm({
+  "node_modules/viem/_esm/utils/hash/toSignatureHash.js"() {
+    init_hashSignature();
+    init_toSignature();
+  }
+});
+
+// node_modules/viem/_esm/utils/hash/toEventSelector.js
+var toEventSelector;
+var init_toEventSelector = __esm({
+  "node_modules/viem/_esm/utils/hash/toEventSelector.js"() {
+    init_toSignatureHash();
+    toEventSelector = toSignatureHash;
+  }
+});
+
+// node_modules/viem/_esm/errors/address.js
+var InvalidAddressError;
+var init_address = __esm({
+  "node_modules/viem/_esm/errors/address.js"() {
+    init_base();
+    InvalidAddressError = class extends BaseError {
+      constructor({ address }) {
+        super(`Address "${address}" is invalid.`, {
+          metaMessages: [
+            "- Address must be a hex value of 20 bytes (40 hex characters).",
+            "- Address must match its checksum counterpart."
+          ],
+          name: "InvalidAddressError"
+        });
+      }
+    };
+  }
+});
+
 // node_modules/viem/_esm/utils/lru.js
 var LruMap;
 var init_lru = __esm({
@@ -18655,13 +18970,13 @@ function checksumAddress(address_, chainId) {
   if (checksumAddressCache.has(`${address_}.${chainId}`))
     return checksumAddressCache.get(`${address_}.${chainId}`);
   const hexAddress = chainId ? `${chainId}${address_.toLowerCase()}` : address_.substring(2).toLowerCase();
-  const hash = keccak256(stringToBytes(hexAddress), "bytes");
+  const hash2 = keccak256(stringToBytes(hexAddress), "bytes");
   const address = (chainId ? hexAddress.substring(`${chainId}0x`.length) : hexAddress).split("");
   for (let i = 0; i < 40; i += 2) {
-    if (hash[i >> 1] >> 4 >= 8 && address[i]) {
+    if (hash2[i >> 1] >> 4 >= 8 && address[i]) {
       address[i] = address[i].toUpperCase();
     }
-    if ((hash[i >> 1] & 15) >= 8 && address[i + 1]) {
+    if ((hash2[i >> 1] & 15) >= 8 && address[i + 1]) {
       address[i + 1] = address[i + 1].toUpperCase();
     }
   }
@@ -18676,6 +18991,34 @@ var init_getAddress = __esm({
     init_keccak256();
     init_lru();
     checksumAddressCache = /* @__PURE__ */ new LruMap(8192);
+  }
+});
+
+// node_modules/viem/_esm/utils/address/isAddress.js
+function isAddress(address, options) {
+  const { strict = true } = options ?? {};
+  const cacheKey = `${address}.${strict}`;
+  if (isAddressCache.has(cacheKey))
+    return isAddressCache.get(cacheKey);
+  const result = (() => {
+    if (!addressRegex.test(address))
+      return false;
+    if (address.toLowerCase() === address)
+      return true;
+    if (strict)
+      return checksumAddress(address) === address;
+    return true;
+  })();
+  isAddressCache.set(cacheKey, result);
+  return result;
+}
+var addressRegex, isAddressCache;
+var init_isAddress = __esm({
+  "node_modules/viem/_esm/utils/address/isAddress.js"() {
+    init_lru();
+    init_getAddress();
+    addressRegex = /^0x[a-fA-F0-9]{40}$/;
+    isAddressCache = /* @__PURE__ */ new LruMap(8192);
   }
 });
 
@@ -18703,6 +19046,491 @@ function concatHex(values) {
 }
 var init_concat = __esm({
   "node_modules/viem/_esm/utils/data/concat.js"() {
+  }
+});
+
+// node_modules/viem/_esm/utils/data/slice.js
+function slice(value, start, end, { strict } = {}) {
+  if (isHex(value, { strict: false }))
+    return sliceHex(value, start, end, {
+      strict
+    });
+  return sliceBytes(value, start, end, {
+    strict
+  });
+}
+function assertStartOffset(value, start) {
+  if (typeof start === "number" && start > 0 && start > size(value) - 1)
+    throw new SliceOffsetOutOfBoundsError({
+      offset: start,
+      position: "start",
+      size: size(value)
+    });
+}
+function assertEndOffset(value, start, end) {
+  if (typeof start === "number" && typeof end === "number" && size(value) !== end - start) {
+    throw new SliceOffsetOutOfBoundsError({
+      offset: end,
+      position: "end",
+      size: size(value)
+    });
+  }
+}
+function sliceBytes(value_, start, end, { strict } = {}) {
+  assertStartOffset(value_, start);
+  const value = value_.slice(start, end);
+  if (strict)
+    assertEndOffset(value, start, end);
+  return value;
+}
+function sliceHex(value_, start, end, { strict } = {}) {
+  assertStartOffset(value_, start);
+  const value = `0x${value_.replace("0x", "").slice((start ?? 0) * 2, (end ?? value_.length) * 2)}`;
+  if (strict)
+    assertEndOffset(value, start, end);
+  return value;
+}
+var init_slice = __esm({
+  "node_modules/viem/_esm/utils/data/slice.js"() {
+    init_data();
+    init_isHex();
+    init_size();
+  }
+});
+
+// node_modules/viem/_esm/utils/regex.js
+var integerRegex;
+var init_regex2 = __esm({
+  "node_modules/viem/_esm/utils/regex.js"() {
+    integerRegex = /^(u?int)(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)?$/;
+  }
+});
+
+// node_modules/viem/_esm/utils/abi/encodeAbiParameters.js
+function encodeAbiParameters(params, values) {
+  if (params.length !== values.length)
+    throw new AbiEncodingLengthMismatchError({
+      expectedLength: params.length,
+      givenLength: values.length
+    });
+  const preparedParams = prepareParams({
+    params,
+    values
+  });
+  return encodeParams(preparedParams);
+}
+function prepareParams({ params, values }) {
+  const preparedParams = [];
+  for (let i = 0; i < params.length; i++) {
+    preparedParams.push(prepareParam({ param: params[i], value: values[i] }));
+  }
+  return preparedParams;
+}
+function prepareParam({ param, value }) {
+  const arrayComponents = getArrayComponents(param.type);
+  if (arrayComponents) {
+    const [length, type] = arrayComponents;
+    return encodeArray(value, { length, param: { ...param, type } });
+  }
+  if (param.type === "tuple") {
+    return encodeTuple(value, {
+      param
+    });
+  }
+  if (param.type === "address") {
+    return encodeAddress(value);
+  }
+  if (param.type === "bool") {
+    return encodeBool(value);
+  }
+  if (param.type.startsWith("uint") || param.type.startsWith("int")) {
+    const signed = param.type.startsWith("int");
+    const [, , size2 = "256"] = integerRegex.exec(param.type) ?? [];
+    return encodeNumber(value, {
+      signed,
+      size: Number(size2)
+    });
+  }
+  if (param.type.startsWith("bytes")) {
+    return encodeBytes(value, { param });
+  }
+  if (param.type === "string") {
+    return encodeString(value);
+  }
+  throw new InvalidAbiEncodingTypeError(param.type, {
+    docsPath: "/docs/contract/encodeAbiParameters"
+  });
+}
+function encodeParams(preparedParams) {
+  let staticSize = 0;
+  for (let i = 0; i < preparedParams.length; i++) {
+    const { dynamic, encoded } = preparedParams[i];
+    if (dynamic)
+      staticSize += 32;
+    else
+      staticSize += size(encoded);
+  }
+  const staticParams = [];
+  const dynamicParams = [];
+  let dynamicSize = 0;
+  for (let i = 0; i < preparedParams.length; i++) {
+    const { dynamic, encoded } = preparedParams[i];
+    if (dynamic) {
+      staticParams.push(numberToHex(staticSize + dynamicSize, { size: 32 }));
+      dynamicParams.push(encoded);
+      dynamicSize += size(encoded);
+    } else {
+      staticParams.push(encoded);
+    }
+  }
+  return concatHex([...staticParams, ...dynamicParams]);
+}
+function encodeAddress(value) {
+  if (!isAddress(value))
+    throw new InvalidAddressError({ address: value });
+  return { dynamic: false, encoded: padHex(value.toLowerCase()) };
+}
+function encodeArray(value, { length, param }) {
+  const dynamic = length === null;
+  if (!Array.isArray(value))
+    throw new InvalidArrayError(value);
+  if (!dynamic && value.length !== length)
+    throw new AbiEncodingArrayLengthMismatchError({
+      expectedLength: length,
+      givenLength: value.length,
+      type: `${param.type}[${length}]`
+    });
+  let dynamicChild = value.length === 0 && isDynamicType(param);
+  const preparedParams = [];
+  for (let i = 0; i < value.length; i++) {
+    const preparedParam = prepareParam({ param, value: value[i] });
+    if (preparedParam.dynamic)
+      dynamicChild = true;
+    preparedParams.push(preparedParam);
+  }
+  if (dynamic || dynamicChild) {
+    const data = encodeParams(preparedParams);
+    if (dynamic) {
+      const length2 = numberToHex(preparedParams.length, { size: 32 });
+      return {
+        dynamic: true,
+        encoded: concatHex([length2, data])
+      };
+    }
+    if (dynamicChild)
+      return { dynamic: true, encoded: data };
+  }
+  return {
+    dynamic: false,
+    encoded: concatHex(preparedParams.map(({ encoded }) => encoded))
+  };
+}
+function encodeBytes(value, { param }) {
+  const [, paramSize] = param.type.split("bytes");
+  const bytesSize = size(value);
+  if (!paramSize) {
+    let value_ = value;
+    if (bytesSize % 32 !== 0)
+      value_ = padHex(value_, {
+        dir: "right",
+        size: Math.ceil((value.length - 2) / 2 / 32) * 32
+      });
+    return {
+      dynamic: true,
+      encoded: concatHex([
+        padHex(numberToHex(bytesSize, { size: 32 })),
+        value_
+      ])
+    };
+  }
+  if (bytesSize !== Number.parseInt(paramSize, 10))
+    throw new AbiEncodingBytesSizeMismatchError({
+      expectedSize: Number.parseInt(paramSize, 10),
+      value
+    });
+  return { dynamic: false, encoded: padHex(value, { dir: "right" }) };
+}
+function encodeBool(value) {
+  if (typeof value !== "boolean")
+    throw new BaseError(`Invalid boolean value: "${value}" (type: ${typeof value}). Expected: \`true\` or \`false\`.`);
+  return { dynamic: false, encoded: padHex(boolToHex(value)) };
+}
+function encodeNumber(value, { signed, size: size2 = 256 }) {
+  if (typeof size2 === "number") {
+    const max = 2n ** (BigInt(size2) - (signed ? 1n : 0n)) - 1n;
+    const min = signed ? -max - 1n : 0n;
+    if (value > max || value < min)
+      throw new IntegerOutOfRangeError({
+        max: max.toString(),
+        min: min.toString(),
+        signed,
+        size: size2 / 8,
+        value: value.toString()
+      });
+  }
+  return {
+    dynamic: false,
+    encoded: numberToHex(value, {
+      size: 32,
+      signed
+    })
+  };
+}
+function encodeString(value) {
+  const hexValue = stringToHex(value);
+  const partsLength = Math.ceil(size(hexValue) / 32);
+  const parts = [];
+  for (let i = 0; i < partsLength; i++) {
+    parts.push(padHex(slice(hexValue, i * 32, (i + 1) * 32), {
+      dir: "right"
+    }));
+  }
+  return {
+    dynamic: true,
+    encoded: concatHex([
+      padHex(numberToHex(size(hexValue), { size: 32 })),
+      ...parts
+    ])
+  };
+}
+function encodeTuple(value, { param }) {
+  let dynamic = false;
+  const preparedParams = [];
+  for (let i = 0; i < param.components.length; i++) {
+    const param_ = param.components[i];
+    const index = Array.isArray(value) ? i : param_.name;
+    const preparedParam = prepareParam({
+      param: param_,
+      value: value[index]
+    });
+    preparedParams.push(preparedParam);
+    if (preparedParam.dynamic)
+      dynamic = true;
+  }
+  return {
+    dynamic,
+    encoded: dynamic ? encodeParams(preparedParams) : concatHex(preparedParams.map(({ encoded }) => encoded))
+  };
+}
+function getArrayComponents(type) {
+  const matches = type.match(/^(.*)\[(\d+)?\]$/);
+  return matches ? (
+    // Return `null` if the array is dynamic.
+    [matches[2] ? Number(matches[2]) : null, matches[1]]
+  ) : void 0;
+}
+function isDynamicType(param) {
+  const { type } = param;
+  if (type === "string")
+    return true;
+  if (type === "bytes")
+    return true;
+  if (type.endsWith("[]"))
+    return true;
+  if (type === "tuple")
+    return param.components.some(isDynamicType);
+  const arrayComponents = getArrayComponents(type);
+  if (arrayComponents)
+    return isDynamicType({ ...param, type: arrayComponents[1] });
+  return false;
+}
+var init_encodeAbiParameters = __esm({
+  "node_modules/viem/_esm/utils/abi/encodeAbiParameters.js"() {
+    init_abi();
+    init_address();
+    init_base();
+    init_encoding();
+    init_isAddress();
+    init_concat();
+    init_pad();
+    init_size();
+    init_slice();
+    init_toHex();
+    init_regex2();
+  }
+});
+
+// node_modules/viem/_esm/utils/hash/toFunctionSelector.js
+var toFunctionSelector;
+var init_toFunctionSelector = __esm({
+  "node_modules/viem/_esm/utils/hash/toFunctionSelector.js"() {
+    init_slice();
+    init_toSignatureHash();
+    toFunctionSelector = (fn) => slice(toSignatureHash(fn), 0, 4);
+  }
+});
+
+// node_modules/viem/_esm/utils/abi/getAbiItem.js
+function getAbiItem(parameters) {
+  const { abi, args = [], name } = parameters;
+  const isSelector = isHex(name, { strict: false });
+  const abiItems = abi.filter((abiItem) => {
+    if (isSelector) {
+      if (abiItem.type === "function")
+        return toFunctionSelector(abiItem) === name;
+      if (abiItem.type === "event")
+        return toEventSelector(abiItem) === name;
+      return false;
+    }
+    return "name" in abiItem && abiItem.name === name;
+  });
+  if (abiItems.length === 0)
+    return void 0;
+  if (abiItems.length === 1)
+    return abiItems[0];
+  let matchedAbiItem;
+  for (const abiItem of abiItems) {
+    if (!("inputs" in abiItem))
+      continue;
+    if (!args || args.length === 0) {
+      if (!abiItem.inputs || abiItem.inputs.length === 0)
+        return abiItem;
+      continue;
+    }
+    if (!abiItem.inputs)
+      continue;
+    if (abiItem.inputs.length === 0)
+      continue;
+    if (abiItem.inputs.length !== args.length)
+      continue;
+    const matched = args.every((arg, index) => {
+      const abiParameter = "inputs" in abiItem && abiItem.inputs[index];
+      if (!abiParameter)
+        return false;
+      return isArgOfType(arg, abiParameter);
+    });
+    if (matched) {
+      if (matchedAbiItem && "inputs" in matchedAbiItem && matchedAbiItem.inputs) {
+        const ambiguousTypes = getAmbiguousTypes(abiItem.inputs, matchedAbiItem.inputs, args);
+        if (ambiguousTypes)
+          throw new AbiItemAmbiguityError({
+            abiItem,
+            type: ambiguousTypes[0]
+          }, {
+            abiItem: matchedAbiItem,
+            type: ambiguousTypes[1]
+          });
+      }
+      matchedAbiItem = abiItem;
+    }
+  }
+  if (matchedAbiItem)
+    return matchedAbiItem;
+  return abiItems[0];
+}
+function isArgOfType(arg, abiParameter) {
+  const argType = typeof arg;
+  const abiParameterType = abiParameter.type;
+  switch (abiParameterType) {
+    case "address":
+      return isAddress(arg, { strict: false });
+    case "bool":
+      return argType === "boolean";
+    case "function":
+      return argType === "string";
+    case "string":
+      return argType === "string";
+    default: {
+      if (abiParameterType === "tuple" && "components" in abiParameter)
+        return Object.values(abiParameter.components).every((component, index) => {
+          return argType === "object" && isArgOfType(Object.values(arg)[index], component);
+        });
+      if (/^u?int(8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)?$/.test(abiParameterType))
+        return argType === "number" || argType === "bigint";
+      if (/^bytes([1-9]|1[0-9]|2[0-9]|3[0-2])?$/.test(abiParameterType))
+        return argType === "string" || arg instanceof Uint8Array;
+      if (/[a-z]+[1-9]{0,3}(\[[0-9]{0,}\])+$/.test(abiParameterType)) {
+        return Array.isArray(arg) && arg.every((x) => isArgOfType(x, {
+          ...abiParameter,
+          // Pop off `[]` or `[M]` from end of type
+          type: abiParameterType.replace(/(\[[0-9]{0,}\])$/, "")
+        }));
+      }
+      return false;
+    }
+  }
+}
+function getAmbiguousTypes(sourceParameters, targetParameters, args) {
+  for (const parameterIndex in sourceParameters) {
+    const sourceParameter = sourceParameters[parameterIndex];
+    const targetParameter = targetParameters[parameterIndex];
+    if (sourceParameter.type === "tuple" && targetParameter.type === "tuple" && "components" in sourceParameter && "components" in targetParameter)
+      return getAmbiguousTypes(sourceParameter.components, targetParameter.components, args[parameterIndex]);
+    const types = [sourceParameter.type, targetParameter.type];
+    const ambiguous = (() => {
+      if (types.includes("address") && types.includes("bytes20"))
+        return true;
+      if (types.includes("address") && types.includes("string"))
+        return isAddress(args[parameterIndex], { strict: false });
+      if (types.includes("address") && types.includes("bytes"))
+        return isAddress(args[parameterIndex], { strict: false });
+      return false;
+    })();
+    if (ambiguous)
+      return types;
+  }
+  return;
+}
+var init_getAbiItem = __esm({
+  "node_modules/viem/_esm/utils/abi/getAbiItem.js"() {
+    init_abi();
+    init_isHex();
+    init_isAddress();
+    init_toEventSelector();
+    init_toFunctionSelector();
+  }
+});
+
+// node_modules/viem/_esm/utils/abi/prepareEncodeFunctionData.js
+function prepareEncodeFunctionData(parameters) {
+  const { abi, args, functionName } = parameters;
+  let abiItem = abi[0];
+  if (functionName) {
+    const item = getAbiItem({
+      abi,
+      args,
+      name: functionName
+    });
+    if (!item)
+      throw new AbiFunctionNotFoundError(functionName, { docsPath });
+    abiItem = item;
+  }
+  if (abiItem.type !== "function")
+    throw new AbiFunctionNotFoundError(void 0, { docsPath });
+  return {
+    abi: [abiItem],
+    functionName: toFunctionSelector(formatAbiItem2(abiItem))
+  };
+}
+var docsPath;
+var init_prepareEncodeFunctionData = __esm({
+  "node_modules/viem/_esm/utils/abi/prepareEncodeFunctionData.js"() {
+    init_abi();
+    init_toFunctionSelector();
+    init_formatAbiItem2();
+    init_getAbiItem();
+    docsPath = "/docs/contract/encodeFunctionData";
+  }
+});
+
+// node_modules/viem/_esm/utils/abi/encodeFunctionData.js
+function encodeFunctionData(parameters) {
+  const { args } = parameters;
+  const { abi, functionName } = (() => {
+    if (parameters.abi.length === 1 && parameters.functionName?.startsWith("0x"))
+      return parameters;
+    return prepareEncodeFunctionData(parameters);
+  })();
+  const abiItem = abi[0];
+  const signature = functionName;
+  const data = "inputs" in abiItem && abiItem.inputs ? encodeAbiParameters(abiItem.inputs, args ?? []) : void 0;
+  return concatHex([signature, data ?? "0x"]);
+}
+var init_encodeFunctionData = __esm({
+  "node_modules/viem/_esm/utils/abi/encodeFunctionData.js"() {
+    init_concat();
+    init_encodeAbiParameters();
+    init_prepareEncodeFunctionData();
   }
 });
 
@@ -18985,24 +19813,24 @@ var init_hmac = __esm({
   "node_modules/viem/node_modules/@noble/hashes/esm/hmac.js"() {
     init_utils();
     HMAC = class extends Hash {
-      constructor(hash, _key) {
+      constructor(hash2, _key) {
         super();
         this.finished = false;
         this.destroyed = false;
-        ahash(hash);
+        ahash(hash2);
         const key = toBytes2(_key);
-        this.iHash = hash.create();
+        this.iHash = hash2.create();
         if (typeof this.iHash.update !== "function")
           throw new Error("Expected instance of class which extends utils.Hash");
         this.blockLen = this.iHash.blockLen;
         this.outputLen = this.iHash.outputLen;
         const blockLen = this.blockLen;
         const pad2 = new Uint8Array(blockLen);
-        pad2.set(key.length > blockLen ? hash.create().update(key).digest() : key);
+        pad2.set(key.length > blockLen ? hash2.create().update(key).digest() : key);
         for (let i = 0; i < pad2.length; i++)
           pad2[i] ^= 54;
         this.iHash.update(pad2);
-        this.oHash = hash.create();
+        this.oHash = hash2.create();
         for (let i = 0; i < pad2.length; i++)
           pad2[i] ^= 54 ^ 92;
         this.oHash.update(pad2);
@@ -19048,8 +19876,8 @@ var init_hmac = __esm({
         this.iHash.destroy();
       }
     };
-    hmac = (hash, key, message) => new HMAC(hash, key).update(message).digest();
-    hmac.create = (hash, key) => new HMAC(hash, key);
+    hmac = (hash2, key, message) => new HMAC(hash2, key).update(message).digest();
+    hmac.create = (hash2, key) => new HMAC(hash2, key);
   }
 });
 
@@ -20469,14 +21297,14 @@ function weierstrass(curveDef) {
   function prepSig(msgHash, privateKey, opts = defaultSigOpts) {
     if (["recovered", "canonical"].some((k) => k in opts))
       throw new Error("sign() legacy options not supported");
-    const { hash, randomBytes: randomBytes2 } = CURVE;
+    const { hash: hash2, randomBytes: randomBytes2 } = CURVE;
     let { lowS, prehash, extraEntropy: ent } = opts;
     if (lowS == null)
       lowS = true;
     msgHash = ensureBytes("msgHash", msgHash);
     validateSigVerOpts(opts);
     if (prehash)
-      msgHash = ensureBytes("prehashed msgHash", hash(msgHash));
+      msgHash = ensureBytes("prehashed msgHash", hash2(msgHash));
     const h1int = bits2int_modN(msgHash);
     const d = normPrivateKeyToScalar(privateKey);
     const seedArgs = [int2octets(d), int2octets(h1int)];
@@ -20799,15 +21627,15 @@ var init_weierstrass = __esm({
 });
 
 // node_modules/viem/node_modules/@noble/curves/esm/_shortw_utils.js
-function getHash(hash) {
+function getHash(hash2) {
   return {
-    hash,
-    hmac: (key, ...msgs) => hmac(hash, key, concatBytes(...msgs)),
+    hash: hash2,
+    hmac: (key, ...msgs) => hmac(hash2, key, concatBytes(...msgs)),
     randomBytes
   };
 }
 function createCurve(curveDef, defHash) {
-  const create = (hash) => weierstrass({ ...curveDef, ...getHash(hash) });
+  const create = (hash2) => weierstrass({ ...curveDef, ...getHash(hash2) });
   return { ...create(defHash), create };
 }
 var init_shortw_utils = __esm({
@@ -20885,7 +21713,7 @@ function hash_to_field(msg, count, options) {
     k: "isSafeInteger",
     hash: "hash"
   });
-  const { p, k, m, hash, expand, DST: _DST } = options;
+  const { p, k, m, hash: hash2, expand, DST: _DST } = options;
   abytes2(msg);
   anum(count);
   const DST = typeof _DST === "string" ? utf8ToBytes2(_DST) : _DST;
@@ -20894,9 +21722,9 @@ function hash_to_field(msg, count, options) {
   const len_in_bytes = count * m * L;
   let prb;
   if (expand === "xmd") {
-    prb = expand_message_xmd(msg, DST, len_in_bytes, hash);
+    prb = expand_message_xmd(msg, DST, len_in_bytes, hash2);
   } else if (expand === "xof") {
-    prb = expand_message_xof(msg, DST, len_in_bytes, k, hash);
+    prb = expand_message_xof(msg, DST, len_in_bytes, k, hash2);
   } else if (expand === "_internal_pass") {
     prb = msg;
   } else {
@@ -21220,8 +22048,8 @@ init_isHex();
 init_size();
 init_fromHex();
 init_toHex();
-async function recoverPublicKey({ hash, signature }) {
-  const hashHex = isHex(hash) ? hash : toHex(hash);
+async function recoverPublicKey({ hash: hash2, signature }) {
+  const hashHex = isHex(hash2) ? hash2 : toHex(hash2);
   const { secp256k1: secp256k12 } = await Promise.resolve().then(() => (init_secp256k1(), secp256k1_exports));
   const signature_ = (() => {
     if (typeof signature === "object" && "r" in signature && "s" in signature) {
@@ -21251,8 +22079,8 @@ function toRecoveryBit(yParityOrV) {
 }
 
 // node_modules/viem/_esm/utils/signature/recoverAddress.js
-async function recoverAddress({ hash, signature }) {
-  return publicKeyToAddress(await recoverPublicKey({ hash, signature }));
+async function recoverAddress({ hash: hash2, signature }) {
+  return publicKeyToAddress(await recoverPublicKey({ hash: hash2, signature }));
 }
 
 // node_modules/viem/_esm/utils/signature/hashMessage.js
@@ -21286,6 +22114,10 @@ function hashMessage(message, to_) {
 async function recoverMessageAddress({ message, signature }) {
   return recoverAddress({ hash: hashMessage(message), signature });
 }
+
+// node_modules/viem/_esm/index.js
+init_encodeFunctionData();
+init_toBytes();
 
 // packages/key/src/proof.mjs
 var MARK = "peranto:key:v1";
@@ -21551,6 +22383,74 @@ function addressOfDid(did) {
   const part = String(did).split(":").pop() ?? "";
   return /^0x[0-9a-fA-F]{40}$/.test(part) ? part : "";
 }
+function seatLayout(certificate) {
+  const cert = certificate?.validity ? certificate : readCertificate(typeof certificate === "string" ? new TextEncoder().encode(certificate) : certificate);
+  const der = Uint8Array.from(import_node_forge.default.asn1.toDer(import_node_forge.default.pki.certificateToAsn1(cert)).getBytes(), (char) => char.charCodeAt(0));
+  let hex = cert.publicKey.n.toString(16);
+  if (hex.length % 2) hex = `0${hex}`;
+  hex = hex.padStart(512, "0").slice(-512);
+  const magnitude = hexToBytes3(hex);
+  const modulusAt = indexOfBytes(der, magnitude);
+  if (modulusAt < 0) throw new Error("No encuentro la llave dentro del certificado.");
+  const expiryAt = findExpiry(der, Math.floor(cert.validity.notAfter.getTime() / 1e3));
+  if (expiryAt < 0) throw new Error("No encuentro la vigencia dentro del certificado.");
+  return { cert: der, modulusAt, expiryAt };
+}
+function hexToBytes3(hex) {
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i += 1) out[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  return out;
+}
+function indexOfBytes(haystack, needle) {
+  const last = haystack.length - needle.length;
+  for (let at = 0; at <= last; at += 1) {
+    let same = true;
+    for (let offset = 0; offset < needle.length; offset += 1) {
+      if (haystack[at + offset] !== needle[offset]) {
+        same = false;
+        break;
+      }
+    }
+    if (same) return at;
+  }
+  return -1;
+}
+function findExpiry(der, epochSeconds) {
+  let found = -1;
+  for (let index = 0; index + 15 <= der.length; index += 1) {
+    const tag = der[index];
+    let parsed = null;
+    if (tag === 23 && der[index + 1] === 13 && der[index + 14] === 90) parsed = utcSeconds(der, index + 2, 2);
+    if (tag === 24 && der[index + 1] === 15 && index + 17 <= der.length && der[index + 16] === 90) {
+      parsed = utcSeconds(der, index + 2, 4);
+    }
+    if (parsed === epochSeconds) found = index;
+  }
+  return found;
+}
+function utcSeconds(der, start, yearDigits) {
+  const yearRaw = digits(der, start, yearDigits);
+  if (yearRaw == null) return null;
+  const year = yearDigits === 2 ? yearRaw >= 50 ? 1900 + yearRaw : 2e3 + yearRaw : yearRaw;
+  const cursor = start + yearDigits;
+  const month = digits(der, cursor, 2);
+  const day = digits(der, cursor + 2, 2);
+  const hour = digits(der, cursor + 4, 2);
+  const minute = digits(der, cursor + 6, 2);
+  const second = digits(der, cursor + 8, 2);
+  if ([month, day, hour, minute, second].some((part) => part == null)) return null;
+  return Math.floor(Date.UTC(year, month - 1, day, hour, minute, second) / 1e3);
+}
+function digits(der, start, length) {
+  if (start + length > der.length) return null;
+  let value = 0;
+  for (let offset = 0; offset < length; offset += 1) {
+    const byte = der[start + offset];
+    if (byte < 48 || byte > 57) return null;
+    value = value * 10 + (byte - 48);
+  }
+  return value;
+}
 function bytesToBinary(bytes) {
   let out = "";
   for (let i = 0; i < bytes.length; i += 1) out += String.fromCharCode(bytes[i]);
@@ -21558,8 +22458,8 @@ function bytesToBinary(bytes) {
 }
 function b64url(value) {
   const pad2 = value.length % 4 === 0 ? "" : "=".repeat(4 - value.length % 4);
-  const b64 = value.replace(/-/g, "+").replace(/_/g, "/") + pad2;
-  const raw = atob(b64);
+  const b642 = value.replace(/-/g, "+").replace(/_/g, "/") + pad2;
+  const raw = atob(b642);
   return Uint8Array.from(raw, (ch) => ch.charCodeAt(0));
 }
 function bytesToText(bytes) {
@@ -21569,6 +22469,44 @@ function bytesToText(bytes) {
 // packages/key/src/browser.mjs
 var import_node_forge2 = __toESM(require_lib(), 1);
 var $ = (id) => document.getElementById(id);
+var SEAT_ABI = [
+  {
+    type: "function",
+    name: "bind",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "cert", type: "bytes" },
+      { name: "modulusAt", type: "uint16" },
+      { name: "expiryAt", type: "uint16" },
+      { name: "signature", type: "bytes" },
+      { name: "statement", type: "bytes" }
+    ],
+    outputs: []
+  },
+  {
+    type: "function",
+    name: "release",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "cert", type: "bytes" },
+      { name: "modulusAt", type: "uint16" },
+      { name: "signature", type: "bytes" },
+      { name: "statement", type: "bytes" }
+    ],
+    outputs: []
+  },
+  {
+    type: "function",
+    name: "seats",
+    stateMutability: "view",
+    inputs: [{ name: "fingerprint", type: "bytes32" }],
+    outputs: [
+      { name: "holder", type: "address" },
+      { name: "expiresAt", type: "uint64" }
+    ]
+  }
+];
+var seatAddress = "";
 function aura() {
   return window.aura?.request ? window.aura : window.ethereum?.request ? window.ethereum : null;
 }
@@ -21618,6 +22556,7 @@ async function connect() {
       $("vault").hidden = false;
       $("vault").textContent = `${status.kind} guardada en la b\xF3veda de CiGo. ${status.subject}`;
       say(`Identidad lista. Firmar\xE9 con la ${status.kind} de la b\xF3veda.`);
+      await paintSeat(account);
       return;
     }
   } catch {
@@ -21625,6 +22564,7 @@ async function connect() {
   $("files").hidden = false;
   $("vault").hidden = true;
   say(`Identidad lista: ${did}`);
+  await paintSeat(account);
 }
 async function prove() {
   const did = $("wallet").dataset.did;
@@ -21649,6 +22589,7 @@ async function prove() {
     $("download").hidden = false;
     $("password").value = "";
     say(`${proof.kind} ligada a ${did}. ${proof.subject}`);
+    await paintSeat(account);
   } catch (error) {
     say(error?.message || "No pude armar la prueba.", true);
   } finally {
@@ -21688,7 +22629,16 @@ async function save() {
         }
       ]
     });
-    say(issued?.anchorTx ? "Qued\xF3 en la cartera y en la cadena." : "Qued\xF3 en la cartera.");
+    let seated = "";
+    try {
+      seated = await sit(proof, account);
+    } catch (error) {
+      seated = error?.message || "No pude sentar la llave.";
+    }
+    say(
+      `${issued?.anchorTx ? "Qued\xF3 en la cartera y en la cadena." : "Qued\xF3 en la cartera."} ${seated}`.trim()
+    );
+    await paintSeat(account);
   } catch (error) {
     say(error?.message || "Aura no guard\xF3 la credencial. Puedes descargar la prueba.", true);
   } finally {
@@ -21762,6 +22712,89 @@ async function checkFile(file) {
 function escape2(value) {
   return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
+async function sit(proof, account) {
+  await seatReady;
+  if (!seatAddress) return "";
+  const current = await readSeat(proof.fingerprint);
+  const now = BigInt(Math.floor(Date.now() / 1e3));
+  const holder = current.holder.toLowerCase();
+  if (holder && holder !== account.toLowerCase() && current.expiresAt > now) {
+    return "Esta llave ya est\xE1 sentada en otra identidad.";
+  }
+  if (holder === account.toLowerCase() && current.expiresAt > now) return "El asiento ya era de esta identidad.";
+  const layout = seatLayout(proof.certificate);
+  const data = encodeFunctionData({
+    abi: SEAT_ABI,
+    functionName: "bind",
+    args: [layout.cert, layout.modulusAt, layout.expiryAt, b64(proof.rsaSignature), toBytes(proof.statement)]
+  });
+  await aura().request({
+    method: "eth_sendTransaction",
+    params: [{ from: account, to: seatAddress, data, value: "0x0" }]
+  });
+  return "La llave qued\xF3 sentada en esta identidad.";
+}
+async function readSeat(fingerprint) {
+  await seatReady;
+  if (!seatAddress) return { holder: "", expiresAt: 0n };
+  const data = encodeFunctionData({ abi: SEAT_ABI, functionName: "seats", args: [`0x${fingerprint}`] });
+  const out = await aura().request({ method: "eth_call", params: [{ to: seatAddress, data }, "latest"] });
+  const body = String(out || "0x").slice(2).padEnd(128, "0");
+  const holder = `0x${body.slice(24, 64)}`;
+  return {
+    holder: /^0x0{40}$/i.test(holder) ? "" : holder,
+    expiresAt: BigInt(`0x${body.slice(64, 128) || "0"}`)
+  };
+}
+async function paintSeat(account) {
+  const button = $("release");
+  const fingerprint = window.__keyProof?.fingerprint || window.__vaultKey?.fingerprint;
+  if (!button || !seatAddress || !fingerprint || !account) {
+    if (button) button.hidden = true;
+    return;
+  }
+  const current = await readSeat(fingerprint);
+  const now = BigInt(Math.floor(Date.now() / 1e3));
+  button.hidden = !(current.holder.toLowerCase() === account.toLowerCase() && current.expiresAt > now);
+}
+async function releaseSeat() {
+  const did = $("wallet").dataset.did;
+  const account = $("wallet").dataset.account;
+  const certificate = window.__vaultKey?.certificate || window.__keyProof?.certificate;
+  const fingerprint = window.__vaultKey?.fingerprint || window.__keyProof?.fingerprint;
+  if (!did || !account || !certificate || !fingerprint) {
+    say("Conecta Aura con la llave en la b\xF3veda para soltar el asiento.", true);
+    return;
+  }
+  const button = $("release");
+  button.disabled = true;
+  try {
+    const statement = ["peranto:key:release:v1", did, fingerprint].join("\n");
+    const signed = window.__vaultKey?.stored ? await aura().request({ method: "peranto_keySign", params: [statement] }) : null;
+    const rsa = typeof signed === "string" ? signed : signed?.rsaSignature;
+    if (!rsa) throw new Error("CiGo no firm\xF3 la liberaci\xF3n con la llave de la b\xF3veda.");
+    const layout = seatLayout(certificate);
+    const data = encodeFunctionData({
+      abi: SEAT_ABI,
+      functionName: "release",
+      args: [layout.cert, layout.modulusAt, b64(rsa), toBytes(statement)]
+    });
+    await aura().request({
+      method: "eth_sendTransaction",
+      params: [{ from: account, to: seatAddress, data, value: "0x0" }]
+    });
+    say("El asiento qued\xF3 libre.");
+    await paintSeat(account);
+  } catch (error) {
+    say(error?.message || "No pude soltar el asiento.", true);
+  } finally {
+    button.disabled = false;
+  }
+}
+function b64(value) {
+  const raw = atob(String(value));
+  return Uint8Array.from(raw, (char) => char.charCodeAt(0));
+}
 function route() {
   const view = location.hash === "#/comprobar" ? "comprobar" : "ligar";
   show(view);
@@ -21769,6 +22802,7 @@ function route() {
 $("wallet").addEventListener("click", () => connect().catch((error) => say(error?.message || "No pude conectar Aura.", true)));
 $("prove").addEventListener("click", () => prove());
 $("save").addEventListener("click", () => save());
+$("release").addEventListener("click", () => releaseSeat());
 $("download").addEventListener("click", () => saveFile());
 $("drop").addEventListener("change", () => {
   const file = $("drop").files?.[0];
@@ -21776,6 +22810,11 @@ $("drop").addEventListener("change", () => {
 });
 window.addEventListener("hashchange", route);
 route();
+var seatReady = fetch("/config.json").then((res) => res.ok ? res.json() : null).then((config) => {
+  seatAddress = config?.address || "";
+}).catch(() => {
+  seatAddress = "";
+});
 if (aura()) {
   $("wallet").textContent = "Conectar Aura";
   if (navigator.userAgent.includes("Aura/")) {

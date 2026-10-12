@@ -1,0 +1,7 @@
+{
+  "address": "0xc4f7BfA02e41daa53443F742f5e10a8BFf3DBDA9",
+  "chainId": 420420417,
+  "rpc": "https://eth-rpc-testnet.polkadot.io/",
+  "deployer": "0x354151d1039Ba06862f8a5062b37BCb8b082cEDF",
+  "fromBlock": 14336946
+}
