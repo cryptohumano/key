@@ -22603,6 +22603,13 @@ async function save() {
   const button = $("save");
   button.disabled = true;
   try {
+    const current = await readSeat(proof.fingerprint);
+    const now = BigInt(Math.floor(Date.now() / 1e3));
+    if (current.holder && current.holder.toLowerCase() !== account.toLowerCase() && current.expiresAt > now) {
+      say("Esta llave ya est\xE1 sentada en otra identidad. Revoca el asiento antes de guardar la credencial.", true);
+      await paintSeat(account);
+      return;
+    }
     const issued = await aura().request({
       method: "peranto_action",
       params: [
@@ -22755,7 +22762,7 @@ async function paintSeat(account) {
   }
   const current = await readSeat(fingerprint);
   const now = BigInt(Math.floor(Date.now() / 1e3));
-  button.hidden = !(current.holder.toLowerCase() === account.toLowerCase() && current.expiresAt > now);
+  button.hidden = !(current.holder && current.expiresAt > now);
 }
 async function releaseSeat() {
   const did = $("wallet").dataset.did;
@@ -22769,7 +22776,11 @@ async function releaseSeat() {
   const button = $("release");
   button.disabled = true;
   try {
-    const statement = ["peranto:key:release:v1", did, fingerprint].join("\n");
+    const current = await readSeat(fingerprint);
+    const now = BigInt(Math.floor(Date.now() / 1e3));
+    if (!current.holder || current.expiresAt <= now) throw new Error("Esta llave no tiene un asiento vigente.");
+    const named = `${did.slice(0, did.lastIndexOf(":"))}:${current.holder}`;
+    const statement = ["peranto:key:release:v1", named, fingerprint].join("\n");
     const signed = window.__vaultKey?.stored ? await aura().request({ method: "peranto_keySign", params: [statement] }) : null;
     const rsa = typeof signed === "string" ? signed : signed?.rsaSignature;
     if (!rsa) throw new Error("CiGo no firm\xF3 la liberaci\xF3n con la llave de la b\xF3veda.");
@@ -22783,7 +22794,7 @@ async function releaseSeat() {
       method: "eth_sendTransaction",
       params: [{ from: account, to: seatAddress, data, value: "0x0" }]
     });
-    say("El asiento qued\xF3 libre.");
+    say("El asiento qued\xF3 libre. Ya puedes guardarlo en esta identidad.");
     await paintSeat(account);
   } catch (error) {
     say(error?.message || "No pude soltar el asiento.", true);
