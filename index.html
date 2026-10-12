@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CiGo · Llaves</title>
+  <link rel="did-configuration" href="/.well-known/did-configuration.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,640&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/app.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="#/">CiGo <span>llaves</span></a>
+    <nav>
+      <a href="#/" data-nav="ligar">Ligar</a>
+      <a href="#/comprobar" data-nav="comprobar">Comprobar</a>
+    </nav>
+    <button id="wallet" type="button">Conectar Aura</button>
+  </header>
+  <main>
+    <section id="ligar">
+      <h1>La llave se queda en este navegador.</h1>
+      <p class="lead">Elige la FIEL o la FIREL. La contraseña solo abre el archivo y no sale de aquí. Aura firma un texto que nombra tu identidad y la huella del certificado.</p>
+      <form class="card" onsubmit="return false">
+        <label>Tipo
+          <select id="kind">
+            <option value="FIEL">FIEL · SAT</option>
+            <option value="FIREL">FIREL · INE</option>
+          </select>
+        </label>
+        <label>Certificado .cer
+          <input id="cer" type="file" accept=".cer,.crt,.pem" />
+        </label>
+        <label>Llave .key
+          <input id="key" type="file" accept=".key,.pem" />
+        </label>
+        <label>Contraseña
+          <input id="password" type="password" autocomplete="off" />
+        </label>
+        <div class="row">
+          <button id="prove" type="button">Firmar prueba</button>
+          <button id="save" type="button" hidden>Guardar en la cartera</button>
+          <button id="download" type="button" class="ghost" hidden>Descargar</button>
+        </div>
+      </form>
+      <p id="status" class="status" hidden></p>
+    </section>
+    <section id="comprobar" hidden>
+      <h1>Comprueba una prueba ya hecha.</h1>
+      <p class="lead">Suelta el JSON descargado o la credencial. Esta página revisa la firma RSA contra el certificado y la firma de Aura contra la identidad. No consulta la revocación del SAT ni del INE.</p>
+      <form class="card" onsubmit="return false">
+        <label>Archivo de la prueba
+          <input id="drop" type="file" accept=".json,.jwt,.txt" />
+        </label>
+      </form>
+      <div id="result" class="card result" hidden></div>
+    </section>
+  </main>
+  <footer>
+    <p>Esto demuestra posesión de la llave. No sustituye una identificación ni una constancia del SAT o del INE.</p>
+  </footer>
+  <script type="module" src="/app.js?v=1"></script>
+</body>
+</html>
